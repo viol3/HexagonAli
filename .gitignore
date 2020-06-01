@@ -1,0 +1,12 @@
+Library/
+Temp/
+obj/
+Logs/
+.vs/
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor-firstpass.csproj
+Assembly-CSharp-firstpass.csproj
+MarketGame.sln
+Unity.Postprocessing.Editor.csproj
+Unity.Postprocessing.Runtime.csproj
+*.csproj
