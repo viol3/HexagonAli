@@ -8,6 +8,10 @@ public class HexagonManager : LocalSingleton<HexagonManager>
     private Transform _parent;
 
     private Hexagon[,] _hexagons;
+
+    private List<BombHexagon> _bombHexagons = new List<BombHexagon>();
+
+    private bool _nextHexagonIsBomb = false;
     protected override void Awake()
     {
         base.Awake();
@@ -31,7 +35,7 @@ public class HexagonManager : LocalSingleton<HexagonManager>
                 {
                     _parent = hexa.transform.parent;
                 }
-                hexa.transform.position = coord.ToPixel() - new Vector2(2f, 2f);
+                hexa.transform.position = CoordToWorld(coord);
                 if(i > 0)
                 {
                     hexa.SetNewColor(coord);
@@ -59,7 +63,7 @@ public class HexagonManager : LocalSingleton<HexagonManager>
                 else if(emptyCellCount > 0)
                 {
                     Hexagon hexagon = ChangeHexagonLocation(new OffsetCoordinate(column, row), new OffsetCoordinate(column, row - emptyCellCount));
-                    Vector2 newPos = new OffsetCoordinate(column, row - emptyCellCount).ToPixel() - new Vector2(2f, 2f);
+                    Vector2 newPos = CoordToWorld(new OffsetCoordinate(column, row - emptyCellCount));
                     StartCoroutine(hexagon.Move(newPos, 5f));
                 }
             }
@@ -76,14 +80,39 @@ public class HexagonManager : LocalSingleton<HexagonManager>
     {
         for (int i = 0; i < emptyCount; i++)
         {
+            
             OffsetCoordinate coord = new OffsetCoordinate(column, GameConfiguration.Instance.RowCount - 1 - i);
-            Vector2 target = coord.ToPixel() - new Vector2(2f, 2f);
-            Hexagon newHexagon = PoolManager.Instance.GetNewHexagon();
+            Vector2 target = CoordToWorld(coord);
+            Hexagon newHexagon = null;
+            if (_nextHexagonIsBomb)
+            {
+                newHexagon = PoolManager.Instance.GetNewBombHexagon();
+                ((BombHexagon)newHexagon).UpdateText();
+                _nextHexagonIsBomb = false;
+                _bombHexagons.Add((BombHexagon)newHexagon);
+            }
+            else
+            {
+                newHexagon = PoolManager.Instance.GetNewHexagon();
+            }
             newHexagon.transform.position = new Vector3(target.x, 7f + ((emptyCount - i) * 0.7f));
             newHexagon.RandomizeColor();
             newHexagon.gameObject.SetActive(true);
             _hexagons[coord.Column, coord.Row] = newHexagon;
             StartCoroutine(newHexagon.Move(target, 10f));
+        }
+    }
+
+    public void SetNextBombFlag(bool value)
+    {
+        _nextHexagonIsBomb = value;
+    }
+
+    public void CountdownBombHexagons()
+    {
+        for (int i = 0; i < _bombHexagons.Count; i++)
+        {
+            _bombHexagons[i].CountDown();
         }
     }
 
@@ -127,12 +156,34 @@ public class HexagonManager : LocalSingleton<HexagonManager>
 
     public static float GetHexagonWidth()
     {
-        return 0.8f;
+        return GetEdgeLength() * 2f;
     }
 
     public static float GetHexagonHeight()
     {
-        return 0.4f * Mathf.Sqrt(3);
+        return GetEdgeLength() * Mathf.Sqrt(3);
+    }
+
+    public static float GetEdgeLength()
+    {
+        return 0.4f;
+    }
+
+    public Vector2 CenterOffset()
+    {
+        int columnCount = _hexagons.GetLength(0);
+        int rowCount = _hexagons.GetLength(1);
+        return new Vector2(GetHexagonWidth() * 0.75f * (columnCount - 1) / 2f, GetHexagonHeight() * (rowCount - 1) / 3f);
+    }
+
+    public Vector3 PixelToWorld(Vector2 pixel)
+    {
+        return pixel - CenterOffset();
+    }
+
+    public Vector3 CoordToWorld(OffsetCoordinate coord)
+    {
+        return coord.ToPixel() - CenterOffset();
     }
 
 }

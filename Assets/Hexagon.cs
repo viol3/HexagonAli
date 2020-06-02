@@ -46,8 +46,7 @@ public class Hexagon : MonoBehaviour
 
     public void RandomizeColor(params int[] excepts)
     {
-        _colorIndex = Utility.RandomIntExcept(ColorReferencer.Instance.GetColorCount(), excepts);
-        //Debug.Log("Result : " + _colorIndex);
+        _colorIndex = HexfallUtility.RandomIntExcept(ColorReferencer.Instance.GetColorCount(), excepts);
         UpdateColor();
     }
 
@@ -56,7 +55,6 @@ public class Hexagon : MonoBehaviour
         OffsetCoordinate leftCoord = new OffsetCoordinate(coord.Column - 1, coord.Row);
         OffsetCoordinate topLeftCoord = new OffsetCoordinate(coord.Column - 1, coord.Row + 1);
         OffsetCoordinate lowerLeftCoord = new OffsetCoordinate(coord.Column - 1, coord.Row - 1);
-        //OffsetCoordinate lowerCoord = new OffsetCoordinate(coord.Column, coord.Row - 1);
         if(coord.Row == 0)
         {
             Hexagon leftHexa = HexagonManager.Instance.GetHexagon(leftCoord);
@@ -91,5 +89,6 @@ public class Hexagon : MonoBehaviour
     {
         transform.eulerAngles = Vector3.zero;
         gameObject.SetActive(false);
+        GameManager.Instance.OnHexagonExploded();
     }
 }

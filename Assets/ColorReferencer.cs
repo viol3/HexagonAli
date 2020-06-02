@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class ColorReferencer : GenericSingleton<ColorReferencer>
 {
-    [SerializeField]
     private Color[] _colors;
 
     protected override void Awake()
     {
         base.Awake();
+    }
+
+    public void Init()
+    {
+        _colors = GameConfiguration.Instance.HexagonColors;
     }
 
     public int GetColorCount()

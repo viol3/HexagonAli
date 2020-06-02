@@ -1,12 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : LocalSingleton<GameManager>
 {
-    public GameObject hexagonPrefab;
+    public event Action OnHexagonExplode;
+    public event Action OnMoveChanged;
+    public event Action OnThousandScoreReached;
 
     private HexagonGroup _selectedGroup;
+
+    private int score = 0;
+    private int highscore = 0;
+    private int moveCount = 0;
+    private int nextBombScore;
+    
 
     protected override void Awake()
     {
@@ -15,10 +24,13 @@ public class GameManager : LocalSingleton<GameManager>
     // Start is called before the first frame update
     void Start()
     {
+        ColorReferencer.Instance.Init();
         InputManager.Instance.OnTap += OnTap;
         HexagonManager.Instance.Initialize(GameConfiguration.Instance.ColumnCount, GameConfiguration.Instance.RowCount);
         HexagonManager.Instance.GenerateHexagons();
         HexagonGroupManager.Instance.CalculateGroups(GameConfiguration.Instance.ColumnCount, GameConfiguration.Instance.RowCount);
+        UIManager.Instance.UpdateTexts();
+        nextBombScore = GameConfiguration.Instance.BombScore;
     }
 
     private void Update()
@@ -27,11 +39,33 @@ public class GameManager : LocalSingleton<GameManager>
         {
             StartCoroutine(RotateTask(true, 0.2f));
         }
+        if(Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log(AreThereAnyPossibleMoves());
+        }
+    }
+
+    public void OnHexagonExploded()
+    {
+        score += 5;
+        if (score >= nextBombScore)
+        {
+            nextBombScore += GameConfiguration.Instance.BombScore ;
+            HexagonManager.Instance.SetNextBombFlag(true);
+            OnThousandScoreReached?.Invoke();
+        }
+        OnHexagonExplode?.Invoke();
+    }
+
+    private void IncreaseMoveCount()
+    {
+        moveCount++;
+        OnMoveChanged?.Invoke();
     }
 
     private void OnTap(Vector3 pos)
     {
-        _selectedGroup = HexagonGroupManager.Instance.NearestGroupTo(pos + new Vector3(2f, 2f));
+        _selectedGroup = HexagonGroupManager.Instance.NearestGroupTo(pos + (Vector3)HexagonManager.Instance.CenterOffset());
         HexagonGroupRotator.Instance.SetHexagonGroup(_selectedGroup);
     }
     
@@ -67,17 +101,60 @@ public class GameManager : LocalSingleton<GameManager>
                 HexagonGroupRotator.Instance.Reset();
                 HexagonManager.Instance.ShiftColumns();
                 yield return new WaitForSeconds(0.6f);
+                IncreaseMoveCount();
                 anyMatch = true;
             }
             if(anyMatch)
             {
+                HexagonManager.Instance.CountdownBombHexagons();
                 yield break;
             }
         }
         
     }
 
+    public int GetScore()
+    {
+        return score;
+    }
+
+    public int GetHighscore()
+    {
+        return highscore;
+    }
+
+    public int GetMoveCount()
+    {
+        return moveCount;
+    }
    
+    bool AreThereAnyPossibleMoves()
+    {
+        List<PairedGroup> pairedGroups = HexagonGroupManager.Instance.GetAllPairedGroups();
+        for (int i = 0; i < pairedGroups.Count; i++)
+        {
+            List<HexagonGroup> singleCommonGroups = HexagonGroupManager.Instance.GetNeighbours(pairedGroups[i], 1);
+            for (int j = 0; j < singleCommonGroups.Count; j++)
+            {
+                if(HexagonGroupManager.Instance.ColorCountOfGroup(singleCommonGroups[j], pairedGroups[i].colorIndex) >= 1)
+                {
+                    return true;
+                }
+            }
+
+            List<HexagonGroup> doubleCommonGroups = HexagonGroupManager.Instance.GetNeighbours(pairedGroups[i], 2);
+            for (int j = 0; j < doubleCommonGroups.Count; j++)
+            {
+                if (HexagonGroupManager.Instance.ColorCountOfGroup(doubleCommonGroups[j], pairedGroups[i].colorIndex) >= 2)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
 
 }

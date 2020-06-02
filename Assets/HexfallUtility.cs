@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Utility
+public class HexfallUtility
 {
+
     public static int RandomIntExcept(int max, params int[] excepts)
     {
         Array.Sort(excepts);

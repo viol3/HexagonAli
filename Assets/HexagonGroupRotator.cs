@@ -19,7 +19,7 @@ public class HexagonGroupRotator : LocalSingleton<HexagonGroupRotator>
     {
         _active = true;
         _outlineSprite.enabled = true;
-        transform.position = group.GetCenter() - new Vector2(2f, 2f);
+        transform.position = HexagonManager.Instance.PixelToWorld(group.GetCenter());
         
         if (group.Rotation == GroupRotation.TwoHexagonsLeft)
         {

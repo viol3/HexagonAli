@@ -11,5 +11,7 @@ public class GameConfiguration : GenericSingleton<GameConfiguration>
 
     public int ColumnCount = 5;
     public int RowCount = 5;
+    public int BombScore = 1000;
+    public Color[] HexagonColors; 
 
 }

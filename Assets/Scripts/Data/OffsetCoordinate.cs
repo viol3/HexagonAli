@@ -14,10 +14,15 @@ public struct OffsetCoordinate
 
     public Vector2 ToPixel()
     {
-        float x = GameConfiguration.Instance.TileSize * (3 / 2f * Column);
-        float y = GameConfiguration.Instance.TileSize * Mathf.Sqrt(3) * (Row - 0.5f * (Column & 1));
+        float x = HexagonManager.GetEdgeLength() * (3 / 2f * Column);
+        float y = HexagonManager.GetEdgeLength() * Mathf.Sqrt(3) * (Row - 0.5f * (Column & 1));
         return new Vector2(x, y);
     }
-    
+
+    public bool Equals(OffsetCoordinate other)
+    {
+        return Row == other.Row && Column == other.Column;
+    }
+
 
 }
