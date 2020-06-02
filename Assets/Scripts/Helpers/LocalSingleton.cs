@@ -1,59 +1,59 @@
-﻿
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public abstract class LocalSingleton<T> : MonoBehaviour where T : Component
+namespace HexagonAli.Helpers
 {
-
-    #region Fields
-
-    /// <summary>
-    /// The instance.
-    /// </summary>
-    private static T instance;
-
-    #endregion
-
-    #region Properties
-
-    /// <summary>
-    /// Gets the instance.
-    /// </summary>
-    /// <value>The instance.</value>
-    public static T Instance
+    public abstract class LocalSingleton<T> : MonoBehaviour where T : Component
     {
-        get
+
+        #region Fields
+
+        /// <summary>
+        /// The instance.
+        /// </summary>
+        private static T instance;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>The instance.</value>
+        public static T Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = FindObjectOfType<T>();
+                    if (instance == null)
+                    {
+                        GameObject obj = new GameObject();
+                        obj.name = typeof(T).Name;
+                        instance = obj.AddComponent<T>();
+                    }
+                }
+                return instance;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Use this for initialization.
+        /// </summary>
+        protected virtual void Awake()
         {
             if (instance == null)
             {
-                instance = FindObjectOfType<T>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    obj.name = typeof(T).Name;
-                    instance = obj.AddComponent<T>();
-                }
+                instance = this as T;
             }
-            return instance;
         }
+
+        #endregion
+
     }
-
-    #endregion
-
-    #region Methods
-
-    /// <summary>
-    /// Use this for initialization.
-    /// </summary>
-    protected virtual void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this as T;
-        }
-    }
-
-    #endregion
-
 }

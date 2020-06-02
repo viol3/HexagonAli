@@ -1,5 +1,8 @@
-﻿public enum GroupRotation
+﻿namespace HexagonAli.Data
 {
-    TwoHexagonsLeft,
-    TwoHexagonsRight
+    public enum GroupRotation
+    {
+        TwoHexagonsLeft,
+        TwoHexagonsRight
+    }
 }

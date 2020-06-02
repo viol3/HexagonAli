@@ -14,9 +14,9 @@ namespace DG.Tweening
     {
         #region Shortcuts
 
-        #region SpriteRenderer
+        #region HexagonSpriteRenderer
 
-        /// <summary>Tweens a SpriteRenderer's color to the given value.
+        /// <summary>Tweens a HexagonSpriteRenderer's color to the given value.
         /// Also stores the spriteRenderer as the tween's target so it can be used for filtered operations</summary>
         /// <param name="endValue">The end value to reach</param><param name="duration">The duration of the tween</param>
         public static TweenerCore<Color, Color, ColorOptions> DOColor(this SpriteRenderer target, Color endValue, float duration)
@@ -36,7 +36,7 @@ namespace DG.Tweening
             return t;
         }
 
-        /// <summary>Tweens a SpriteRenderer's color using the given gradient
+        /// <summary>Tweens a HexagonSpriteRenderer's color using the given gradient
         /// (NOTE 1: only uses the colors of the gradient, not the alphas - NOTE 2: creates a Sequence, not a Tweener).
         /// Also stores the image as the tween's target so it can be used for filtered operations</summary>
         /// <param name="gradient">The gradient to use</param><param name="duration">The duration of the tween</param>
@@ -64,12 +64,12 @@ namespace DG.Tweening
 
         #region Blendables
 
-        #region SpriteRenderer
+        #region HexagonSpriteRenderer
 
-        /// <summary>Tweens a SpriteRenderer's color to the given value,
+        /// <summary>Tweens a HexagonSpriteRenderer's color to the given value,
         /// in a way that allows other DOBlendableColor tweens to work together on the same target,
         /// instead than fight each other as multiple DOColor would do.
-        /// Also stores the SpriteRenderer as the tween's target so it can be used for filtered operations</summary>
+        /// Also stores the HexagonSpriteRenderer as the tween's target so it can be used for filtered operations</summary>
         /// <param name="endValue">The value to tween to</param><param name="duration">The duration of the tween</param>
         public static Tweener DOBlendableColor(this SpriteRenderer target, Color endValue, float duration)
         {

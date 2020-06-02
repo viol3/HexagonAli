@@ -1,24 +1,26 @@
 ﻿using UnityEngine;
 
-public struct HexagonGroup
+namespace HexagonAli.Data
 {
-    public OffsetCoordinate A { get; }
-    public OffsetCoordinate B { get; }
-    public OffsetCoordinate C { get; }
-
-    public GroupRotation Rotation { get; }
-
-    public HexagonGroup(OffsetCoordinate a, OffsetCoordinate b, OffsetCoordinate c,
-        GroupRotation rotation)
+    public struct HexagonGroup
     {
-        A = a;
-        B = b;
-        C = c;
-        Rotation = rotation;
-    }
+        public OffsetCoordinate A;
+        public OffsetCoordinate B;
+        public OffsetCoordinate C;
 
-    public Vector2 GetCenter()
-    {
-        return (A.ToPixel() + B.ToPixel() + C.ToPixel()) / 3f;
+        public GroupRotation Rotation;
+
+        public HexagonGroup(OffsetCoordinate a, OffsetCoordinate b, OffsetCoordinate c, GroupRotation rotation)
+        {
+            A = a;
+            B = b;
+            C = c;
+            Rotation = rotation;
+        }
+
+        public Vector2 GetCenter()
+        {
+            return (A.ToPixel() + B.ToPixel() + C.ToPixel()) / 3f;
+        }
     }
 }
