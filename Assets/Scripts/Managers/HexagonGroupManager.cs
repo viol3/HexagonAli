@@ -128,9 +128,13 @@ namespace HexagonAli.Managers
             for (int i = 0; i < _matchedGroups.Count; i++)
             {
                 ExplodeParticle explodeParticle = PoolManager.Instance.GetNewExplodeParticle();
-                explodeParticle.SetColor(color);
-                explodeParticle.SetPosition(HexagonManager.Instance.PixelToWorld(_matchedGroups[i].GetCenter()));
-                explodeParticle.Explode();
+                if (explodeParticle)
+                {
+                    explodeParticle.SetColor(color);
+                    explodeParticle.SetPosition(HexagonManager.Instance.PixelToWorld(_matchedGroups[i].GetCenter()));
+                    explodeParticle.Explode();
+                }
+                
                 HexagonManager.Instance.ExplodeHexagon(_matchedGroups[i].A);
                 HexagonManager.Instance.ExplodeHexagon(_matchedGroups[i].B);
                 HexagonManager.Instance.ExplodeHexagon(_matchedGroups[i].C);

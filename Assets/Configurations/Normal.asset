@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columnCount: 8
   rowCount: 9
-  bombScore: 10
+  bombScore: 1000
   hexagonColors:
   - {r: 1, g: 0.34901962, b: 0.36862746, a: 1}
   - {r: 1, g: 0.7921569, b: 0.22745098, a: 1}
