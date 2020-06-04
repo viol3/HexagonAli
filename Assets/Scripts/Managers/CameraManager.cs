@@ -17,9 +17,9 @@ namespace HexagonAli.Managers
         static float GetOrthographicSize()
         {
             float normalSize = GetDefaultOrtographicSize();
-            if (GameConfiguration.Instance.columnCount > 8)
+            if (GameConfiguration.Instance.GetColumnCount() > 8)
             {
-                return Mathf.Min(GameConfiguration.Instance.columnCount * normalSize / 8f, 15f);
+                return Mathf.Min(GameConfiguration.Instance.GetColumnCount() * normalSize / 8f, 15f);
             }
             return normalSize;
         }

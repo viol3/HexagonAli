@@ -13,15 +13,14 @@ namespace HexagonAli.View
         [SerializeField]
         private SpriteRenderer outlineSprite;
         private Hexagon[] _outlinedHexagons = new Hexagon[3];
+        private Transform _oldParent;
 #pragma warning restore 0649
 
-        public void SetHexagonGroup(HexagonGroup group)
+        public void UpdateRotation(GroupRotation groupRotation)
         {
-            outlineSprite.gameObject.SetActive(true);
-            transform.position = HexagonManager.Instance.PixelToWorld(group.GetCenter());
-        
-            if (group.Rotation == GroupRotation.TwoHexagonsLeft)
+            if (groupRotation == GroupRotation.TwoHexagonsLeft)
             {
+                //because i don't have perfect centerized group texture for this game
                 outlineSprite.transform.localPosition = Vector3.right * 0.36f;
                 outlineSprite.transform.eulerAngles = Vector3.forward * 180f;
             }
@@ -30,10 +29,18 @@ namespace HexagonAli.View
                 outlineSprite.transform.localPosition = Vector3.left * 0.36f;
                 outlineSprite.transform.eulerAngles = Vector3.forward * 0;
             }
+        }
 
-            _outlinedHexagons[0] = HexagonManager.Instance.GetHexagon(group.A);
-            _outlinedHexagons[1] = HexagonManager.Instance.GetHexagon(group.B);
-            _outlinedHexagons[2] = HexagonManager.Instance.GetHexagon(group.C);
+        public void SetHexagons(Hexagon a, Hexagon b, Hexagon c)
+        {
+            _outlinedHexagons[0] = a;
+            _outlinedHexagons[1] = b;
+            _outlinedHexagons[2] = c;
+        }
+
+        public void SetPosition(Vector3 pos)
+        {
+            transform.position = pos;
         }
 
         public void ParentSelectedHexagons()
@@ -42,6 +49,10 @@ namespace HexagonAli.View
             {
                 if(_outlinedHexagons[i])
                 {
+                    if (_oldParent == null)
+                    {
+                        _oldParent = _outlinedHexagons[i].transform.parent;
+                    }
                     _outlinedHexagons[i].transform.SetParent(transform);
                     _outlinedHexagons[i].BringFront();
                 }
@@ -54,10 +65,15 @@ namespace HexagonAli.View
             {
                 if (_outlinedHexagons[i])
                 {
-                    _outlinedHexagons[i].transform.SetParent(HexagonManager.Instance.GetParent());
+                    _outlinedHexagons[i].transform.SetParent(_oldParent);
                     _outlinedHexagons[i].SendBackward();
                 }
             }
+            _oldParent = null;
+        }
+        public void Activate()
+        {
+            outlineSprite.gameObject.SetActive(true);
         }
 
         public void Reset()

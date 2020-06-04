@@ -23,7 +23,28 @@ namespace HexagonAli.Managers
 
         public ExplodeParticle GetNewExplodeParticle()
         {
-            return explodeParticlePool.Spawn(Vector3.zero, Quaternion.Euler(Vector3.zero)).GetComponent<ExplodeParticle>();
+            GameObject explodeParticleGO = explodeParticlePool.Spawn(Vector3.zero, Quaternion.Euler(Vector3.zero));
+            if (explodeParticleGO)
+            {
+                return explodeParticleGO.GetComponent<ExplodeParticle>();
+            }
+            return null;
+        }
+            
+
+        public void DespawnExplodeParticle(ExplodeParticle explodeParticle)
+        {
+            explodeParticlePool.Despawn(explodeParticle.gameObject);
+        }
+
+        public void DespawnHexagon(Hexagon hexagon)
+        {
+            hexagonPool.Despawn(hexagon.gameObject);
+        }
+
+        public void DespawnBombHexagon(BombHexagon bombHexagon)
+        {
+            bombHexagonPool.Despawn(bombHexagon.gameObject);
         }
     }
 }

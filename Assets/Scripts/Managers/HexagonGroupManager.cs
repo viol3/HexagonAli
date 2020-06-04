@@ -127,7 +127,10 @@ namespace HexagonAli.Managers
             Color color = HexagonManager.Instance.GetHexagon(_matchedGroups[0].A).GetColor();
             for (int i = 0; i < _matchedGroups.Count; i++)
             {
-                PoolManager.Instance.GetNewExplodeParticle().Explode(HexagonManager.Instance.PixelToWorld(_matchedGroups[i].GetCenter()), color);
+                ExplodeParticle explodeParticle = PoolManager.Instance.GetNewExplodeParticle();
+                explodeParticle.SetColor(color);
+                explodeParticle.SetPosition(HexagonManager.Instance.PixelToWorld(_matchedGroups[i].GetCenter()));
+                explodeParticle.Explode();
                 HexagonManager.Instance.ExplodeHexagon(_matchedGroups[i].A);
                 HexagonManager.Instance.ExplodeHexagon(_matchedGroups[i].B);
                 HexagonManager.Instance.ExplodeHexagon(_matchedGroups[i].C);

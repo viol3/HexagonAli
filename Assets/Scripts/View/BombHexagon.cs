@@ -1,6 +1,5 @@
-﻿using HexagonAli.Data;
-using HexagonAli.Managers;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace HexagonAli.View
 {
@@ -11,8 +10,10 @@ namespace HexagonAli.View
         private TextMesh counterText;
         private int _counter = 6;
         private MeshRenderer _textMeshRenderer;
-#pragma warning restore 0649
 
+#pragma warning restore 0649
+        //when counter is 0
+        public UnityEvent OnBombDetonated;
         protected override void Awake()
         {
             base.Awake();
@@ -22,7 +23,7 @@ namespace HexagonAli.View
         }
         public void SetCounter(int counter)
         {
-            this._counter = counter;
+            _counter = counter;
         }
 
         private void Update()
@@ -36,14 +37,8 @@ namespace HexagonAli.View
             UpdateText();
             if(_counter <= 0)
             {
-                GameManager.Instance.LoseGame(GameOverReason.BombExploded);
+                OnBombDetonated?.Invoke();
             }
-        }
-
-        public override void Explode()
-        {
-            base.Explode();
-            HexagonManager.Instance.RemoveBombHexagonFromList(this);
         }
 
         public override void BringFront()
@@ -62,5 +57,6 @@ namespace HexagonAli.View
         {
             counterText.text = _counter.ToString();
         }
+
     }
 }

@@ -10,8 +10,6 @@ namespace HexagonAli.Managers
 {
     public class GameManager : LocalSingleton<GameManager>
     {
-        public event Action OnHexagonExplode;
-        public event Action OnMoveChanged;
         public event Action OnThousandScoreReached;
 
         private HexagonGroup _selectedGroup;
@@ -31,7 +29,8 @@ namespace HexagonAli.Managers
             CameraManager.Instance.Init();
             InputManager.Instance.OnTap += OnTap;
             InputManager.Instance.OnSwipe += OnSwipe;
-            HexagonManager.Instance.Initialize(GameConfiguration.Instance.columnCount, GameConfiguration.Instance.rowCount);
+            UIManager.Instance.OnTryAgain += TryAgain;
+            HexagonManager.Instance.Initialize(GameConfiguration.Instance.GetColumnCount(), GameConfiguration.Instance.GetRowCount());
             if(ColorReferencer.Instance.GetColorCount() <= 2)
             {
                 Debug.LogWarning("You need to put 3 colors at least in Game Configuration.");
@@ -39,10 +38,11 @@ namespace HexagonAli.Managers
             else
             {
                 HexagonManager.Instance.GenerateHexagons();
-                HexagonGroupManager.Instance.CalculateGroups(GameConfiguration.Instance.columnCount, GameConfiguration.Instance.rowCount);
+                HexagonGroupManager.Instance.CalculateGroups(GameConfiguration.Instance.GetColumnCount(), GameConfiguration.Instance.GetRowCount());
             }
-            UIManager.Instance.UpdateTexts();
-            _nextBombScore = GameConfiguration.Instance.bombScore;
+            UIManager.Instance.UpdateScore(_score);
+            UIManager.Instance.UpdateMoveCount(_moveCount);
+            _nextBombScore = GameConfiguration.Instance.GetBombScore();
             yield return FaderManager.Instance.OpenTheater();
         }
 
@@ -51,11 +51,11 @@ namespace HexagonAli.Managers
             _score += 5;
             if (_score >= _nextBombScore)
             {
-                _nextBombScore += GameConfiguration.Instance.bombScore ;
+                _nextBombScore += GameConfiguration.Instance.GetBombScore() ;
                 HexagonManager.Instance.SetNextBombFlag(true);
                 OnThousandScoreReached?.Invoke();
             }
-            OnHexagonExplode?.Invoke();
+            UIManager.Instance.UpdateScore(_score);
         }
 
         public void LoseGame(GameOverReason gameOverReason )
@@ -80,7 +80,17 @@ namespace HexagonAli.Managers
         private void IncreaseMoveCount()
         {
             _moveCount++;
-            OnMoveChanged?.Invoke();
+            UIManager.Instance.UpdateMoveCount(_moveCount);
+        }
+
+        private void SetSelectedGroupToRotator()
+        {
+            HexagonGroupRotator.Instance.Activate();
+            HexagonGroupRotator.Instance.UpdateRotation(_selectedGroup.Rotation);
+            HexagonGroupRotator.Instance.SetPosition(HexagonManager.Instance.PixelToWorld(_selectedGroup.GetCenter()));
+            HexagonGroupRotator.Instance.SetHexagons(HexagonManager.Instance.GetHexagon(_selectedGroup.A),
+                HexagonManager.Instance.GetHexagon(_selectedGroup.B),
+                HexagonManager.Instance.GetHexagon(_selectedGroup.C));
         }
 
         private void OnTap(Vector3 pos)
@@ -95,7 +105,7 @@ namespace HexagonAli.Managers
             if(distance < 1f)
             {
                 _selectedGroup = HexagonGroupManager.Instance.NearestGroupTo(pos + (Vector3)HexagonManager.Instance.CenterOffset());
-                HexagonGroupRotator.Instance.SetHexagonGroup(_selectedGroup);
+                SetSelectedGroupToRotator();
                 _anyGroupSelected = true;
             }
         
@@ -157,12 +167,15 @@ namespace HexagonAli.Managers
             HexagonManager.Instance.GenerateHexagons();
             HexagonManager.Instance.ClearBombHexagonList();
             UIManager.Instance.HideGameOverPanel();
-            yield return FaderManager.Instance.OpenTheater();
             _gameOver = false;
             _score = 0;
             _moveCount = 0;
-            _nextBombScore = GameConfiguration.Instance.bombScore;
-            UIManager.Instance.UpdateTexts();
+            _nextBombScore = GameConfiguration.Instance.GetBombScore();
+            UIManager.Instance.UpdateScore(_score);
+            UIManager.Instance.UpdateMoveCount(_moveCount);
+            HexagonGroupRotator.Instance.Reset();
+            _anyGroupSelected = false;
+            yield return FaderManager.Instance.OpenTheater();
             _restarting = false;
         }
     
@@ -188,8 +201,7 @@ namespace HexagonAli.Managers
                     HexagonManager.Instance.SetHexagon(_selectedGroup.B, c);
                     HexagonManager.Instance.SetHexagon(_selectedGroup.A, b);
                 }
-            
-
+                //parent hexagons to rotate
                 HexagonGroupRotator.Instance.ParentSelectedHexagons();
                 yield return HexagonGroupRotator.Instance.Rotate(clockwise, 120f, duration);
                 HexagonGroupRotator.Instance.UnparentSelectedHexagons();
@@ -214,21 +226,11 @@ namespace HexagonAli.Managers
             {
                 LoseGame(GameOverReason.NoPossibleMove);
             }
-            HexagonGroupRotator.Instance.SetHexagonGroup(_selectedGroup);
+            SetSelectedGroupToRotator();
             _rotating = false;
 
         }
 
-        public int GetScore()
-        {
-            return _score;
-        }
-
-        public int GetMoveCount()
-        {
-            return _moveCount;
-        }
-        
         bool AreThereAnyPossibleMoves()
         {
             //Getting groups that has got 2 same colors.

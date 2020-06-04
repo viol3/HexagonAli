@@ -9,7 +9,7 @@ namespace HexagonAli.Managers
 
         public void Init()
         {
-            _colors = GameConfiguration.Instance.hexagonColors;
+            _colors = GameConfiguration.Instance.GetHexagonColors();
         }
 
         public int GetColorCount()
@@ -17,9 +17,14 @@ namespace HexagonAli.Managers
             return _colors.Length;
         }
 
-        public Color GetColorByIndex(int colorIndex)
+        public Color GetColorByIndex(int index)
         {
-            return _colors[colorIndex];
+            return _colors[index];
+        }
+
+        public int GetRandomColorIndexExcepts(params int[] colorIndices)
+        {
+            return HexfallUtility.RandomIntExcept(_colors.Length, colorIndices); ;
         }
 
     }

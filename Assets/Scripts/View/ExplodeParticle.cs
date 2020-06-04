@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using HexagonAli.Managers;
 using UnityEngine;
 
 namespace HexagonAli.View
@@ -10,12 +11,19 @@ namespace HexagonAli.View
         {
             _particle = GetComponent<ParticleSystem>();
         }
-    
-        public void Explode(Vector2 position, Color color)
+
+        public void SetPosition(Vector3 position)
+        {
+            transform.position = position;
+        }
+
+        public void SetColor(Color color)
         {
             var main = _particle.main;
             main.startColor = color;
-            transform.position = position;
+        }
+        public void Explode()
+        {
             _particle.Play();
             gameObject.SetActive(true);
             StartCoroutine(DisableAfter(1f));
@@ -24,7 +32,7 @@ namespace HexagonAli.View
         IEnumerator DisableAfter(float seconds)
         {
             yield return new WaitForSeconds(seconds);
-            gameObject.SetActive(false);
+            PoolManager.Instance.DespawnExplodeParticle(this);
         }
     }
 }

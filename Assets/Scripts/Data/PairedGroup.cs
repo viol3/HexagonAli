@@ -13,9 +13,9 @@
 
         public PairedGroup(OffsetCoordinate[] pairs, OffsetCoordinate other, int colorIndex)
         {
-            this.Pairs = pairs;
-            this.Other = other;
-            this.ColorIndex = colorIndex;
+            Pairs = pairs;
+            Other = other;
+            ColorIndex = colorIndex;
         }
 
     }

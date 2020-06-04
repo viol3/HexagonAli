@@ -1,30 +1,41 @@
-﻿using HexagonAli.Helpers;
+﻿using HexagonAli.Data;
+using HexagonAli.Helpers;
 using UnityEngine;
 
 namespace HexagonAli.Managers
 {
     public class GameConfiguration : GenericSingleton<GameConfiguration>
     {
-        protected override void Awake()
+#pragma warning disable 0649
+        [SerializeField] private GameConfigurationData currentConfiguration;
+#pragma warning restore 0649
+        public int GetColumnCount()
         {
-            base.Awake();
-            if(columnCount < 3)
+            if (currentConfiguration.columnCount < 3)
             {
-                columnCount = 3;
+                return 3;
             }
-
-            if (rowCount < 3)
-            {
-                rowCount = 3;
-            }
+            return currentConfiguration.columnCount;
         }
 
-        public int columnCount = 5;
-        public int rowCount = 5;
-        public int bombScore = 1000;
-        public Color[] hexagonColors; 
+        public int GetRowCount()
+        {
+            if (currentConfiguration.rowCount < 3)
+            {
+                return 3;
+            }
+            return currentConfiguration.rowCount;
+        }
 
-        
+        public int GetBombScore()
+        {
+            return currentConfiguration.bombScore;
+        }
+
+        public Color[] GetHexagonColors()
+        {
+            return currentConfiguration.hexagonColors;
+        }
 
     }
 }

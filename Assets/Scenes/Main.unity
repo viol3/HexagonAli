@@ -823,15 +823,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 159dba0343f31a8499cbf5506ac0dd36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columnCount: 8
-  rowCount: 9
-  bombScore: 1000
-  hexagonColors:
-  - {r: 1, g: 0.34901962, b: 0.36862746, a: 1}
-  - {r: 1, g: 0.7921569, b: 0.22745098, a: 1}
-  - {r: 0.5411765, g: 0.7882353, b: 0.14901961, a: 1}
-  - {r: 0.09803922, g: 0.50980395, b: 0.76862746, a: 1}
-  - {r: 0.41568628, g: 0.29803923, b: 0.5764706, a: 1}
+  currentConfiguration: {fileID: 11400000, guid: 73f3402553418454eaba302b570e6b0b,
+    type: 2}
 --- !u!4 &905176578
 Transform:
   m_ObjectHideFlags: 0
@@ -1501,8 +1494,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 6014042021291959175, guid: 0350d067d564eda4b951e8e6f6ce8713, type: 3}
   Notification: 0
-  Preload: 0
-  Capacity: 0
+  Preload: 10
+  Capacity: 10
   Recycle: 0
   Persist: 0
   Stamp: 0

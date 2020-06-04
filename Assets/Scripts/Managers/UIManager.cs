@@ -1,4 +1,5 @@
-﻿using HexagonAli.Helpers;
+﻿using System;
+using HexagonAli.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,33 +9,19 @@ namespace HexagonAli.Managers
     {
 #pragma warning disable 0649
         [Header("Texts")]
-        [SerializeField]
-        private Text scoreText;
-        [SerializeField]
-        private Text moveCountText;
+        [SerializeField] private Text scoreText;
+        [SerializeField] private Text moveCountText;
 
         [Header("Game Over")]
-        [SerializeField]
-        private GameObject gameOverPanel;
-        [SerializeField]
-        private Text gameOverReasonText;
+        [SerializeField] private GameObject gameOverPanel;
+        [SerializeField] private Text gameOverReasonText;
 #pragma warning restore 0649
 
-        private void Start()
-        {
-            GameManager.Instance.OnHexagonExplode += UpdateScore;
-            GameManager.Instance.OnMoveChanged += UpdateMove;
-        }
-
-        public void UpdateTexts()
-        {
-            UpdateScore();
-            UpdateMove();
-        }
+        public event Action OnTryAgain;
 
         public void OnTryAgainButtonClick()
         {
-            GameManager.Instance.TryAgain();
+            OnTryAgain?.Invoke();
         }
 
         public void ShowGameOverPanel()
@@ -52,14 +39,14 @@ namespace HexagonAli.Managers
             gameOverReasonText.text = reason;
         }
 
-        private void UpdateScore()
+        public void UpdateScore(int score)
         {
-            scoreText.text = GameManager.Instance.GetScore().ToString();
+            scoreText.text = score.ToString();
         }
 
-        private void UpdateMove()
+        public void UpdateMoveCount(int moveCount)
         {
-            moveCountText.text = GameManager.Instance.GetMoveCount().ToString();
+            moveCountText.text = moveCount.ToString();
         }
     }
 }
