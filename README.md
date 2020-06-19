@@ -1,6 +1,4 @@
-# Hexfall
-
-Demo project for Vertigo Games.
+# Hexfall Clone
 
 ## Third Party Tools
 
